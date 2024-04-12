@@ -1,0 +1,120 @@
+* {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
+
+header {
+  background: linear-gradient(
+    to right,
+    #77530a,
+    #c59a45,
+    #77530a,
+    #77530a,
+    #c59a45,
+    #77530a
+  );
+  color: white;
+  text-align: center;
+  height: 20vh;
+  width: 100%;
+  font-size: 40px;
+  text-decoration: underline;
+}
+
+body {
+  background: linear-gradient(
+    to right,
+    #77530a,
+    #c59a45,
+    #77530a,
+    #77530a,
+    #c59a45,
+    #77530a
+  );
+}
+
+.minha-div {
+  background-image: url(img/pexels-pixabay-258154.jpg);
+  border: 4px solid white;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 99%;
+  height: 92vh;
+}
+
+.minha-div {
+  text-align: center;
+}
+
+.btn {
+  width: 300px;
+  height: 80px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(
+    to right,
+    #77530a,
+    #ffd277,
+    #77530a,
+    #77530a,
+    #ffd277,
+    #77530a
+  );
+  background-size: 250%;
+  background-position: left;
+  color: #2e2929;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition-duration: 1s;
+  overflow: hidden;
+  font-size: 23px;
+}
+
+.btn::before {
+  color: #271d08;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 97%;
+  height: 90%;
+  border-radius: 8px;
+  transition-duration: 1s;
+  background-color: rgba(0, 0, 0, 0.842);
+  background-size: 200%;
+}
+
+.btn:hover {
+  background-position: right;
+  transition-duration: 1s;
+}
+
+.btn:hover::before {
+  background-position: right;
+  transition-duration: 1s;
+}
+
+.btn:active {
+  transform: scale(0.95);
+}
+
+footer {
+  margin-top: 0px;
+  background-color: #161616;
+  color: #fff;
+  text-align: center;
+  padding: 30px;
+}
+
+.boas-vindas {
+  background: linear-gradient(to right, #77530a, #422e06);
+  color: #fff;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+}
