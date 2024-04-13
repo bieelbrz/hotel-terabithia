@@ -24,7 +24,7 @@ function autenticarUsuario() {
 function menuPrincipal() {
   const opcao = parseInt(
     prompt(
-      `Escolha uma opção:\n1. Reservar quarto\n2. Cadastrar Hóspede\n3. Pesquisar Hóspede\n4. Verificar Auditório\n5. Sair`
+      `Escolha uma opção:\n1. Reservar quarto\n2. Cadastrar Hóspede\n3. Pesquisar Hóspede\n4. Verificar Auditório\n5. Comparar preços do combustível\n6. Manutenção de Ar\n7. Sair`
     )
   );
 
@@ -43,12 +43,24 @@ function menuPrincipal() {
       break;
     case 4:
       verificarAuditorio();
+      verificarDisponibilidade();
+      calcularGarçons();
+      calcularBuffet();
       menuPrincipal();
+      break;
     case 5:
+      compararPreçosCombustivel();
       menuPrincipal();
+      break;
+    case 6:
+      calcularValorServico();
+      menuPrincipal();
+    case 7:
+      despedida();
+      break;
     default:
       alert("Opção inválida. Tente novamente.");
-      menuPrincipal;
+      menuPrincipal();
       break;
   }
 }
@@ -110,9 +122,8 @@ function reservarQuarto() {
 
   const valorTotal = valorDiaria * quantidadeDias;
   const confirmacao = prompt(
-    `${nomeHospede}, você confirma a hospedagem para ${nomeHospede} por ${quantidadeDias} dias para o quarto ${numeroQuarto} por R$${valorTotal.toFixed(
-      2
-    )}? (S/N)`
+    `${nomeHospede}, você confirma a hospedagem para ${nomeHospede} por ${quantidadeDias} dias para o quarto
+     ${numeroQuarto} por R$${valorTotal.toFixed(2)}? (S/N)`
   );
 
   if (confirmacao.toUpperCase() === "S") {
@@ -191,7 +202,7 @@ function opcao() {
 const hospede = [];
 
 function procurarHospede(nome) {
-  if (hospedes.lenght >= 15) {
+  if (hospedes.length >= 15) {
     alert("Máximo de cadastros atingido.");
   } else {
     hospedes.push(nome);
@@ -227,98 +238,220 @@ function opcao() {
 }
 
 function verificarAuditorio() {
-  const numeroConvidados = parseInt(prompt("Digite o número de convidados."));
-  if (numeroConvidados > 350 || numeroConvidados < 0) {
-    alert("Números de convidados inválido");
-  } else if (numeroConvidados <= 150) {
-    const capacidadeLaranja = 150;
-    const cadeirasAdicionais = Math.max(
-      0,
-      numeroConvidados - capacidadeLaranja
-    );
-    let escolherDia = prompt("Escolha o dia para reservar o auditório");
-    let escolherHora = prompt("Escolha o horário da reserva do auditório");
-    verificarDisponibilidade(escolherDia, escolherHora);
-    alert(
-      `Use o auditório Laranja (inclua mais ${cadeirasAdicionais} cadeiras`
-    );
+  const numConvidados = parseInt(
+    prompt("Qual o número de convidados para o seu evento?")
+  );
+
+  if (numConvidados > 350 || numConvidados < 0) {
+    alert("Número de convidados inválido");
+  } else if (numConvidados <= 150) {
+    alert("Use o auditório Laranja");
+    alert("Agora vamos ver a agenda do evento.");
   } else {
-    alert("Use o autidório Colorado");
-    let escolherDia = prompt("Escolha o dia para reservar o auditório");
-    let escolherHora = prompt("Escolha o horário da reserva do auditório");
-    verificarDisponibilidade(escolherDia, escolherHora);
+    const numeroCadeirasAdicionais = Math.min(70, numConvidados - 150);
+    alert(
+      `Use o auditório Laranja (inclua mais ${numeroCadeirasAdicionais} cadeiras)`
+    );
+    alert("Agora vamos ver a agenda do evento.");
   }
 }
 
-function verificarDisponibilidade(dia, hora) {
-  const diasSemana = [
-    "domingo",
-    "segunda",
-    "terça",
-    "quarta",
-    "quinta",
-    "sexta",
-    "sábado",
-  ];
-  const dayIndex = diasSemana.indexOf(dia.toLowerCase());
-  if (
-    dayIndex === -1 ||
-    hora < 7 ||
-    (hora > 23 && dayIndex !== 6) ||
-    (hora > 15 && dayIndex === 6)
-  ) {
-    alert("Auditório Indisponível");
+function verificarDisponibilidade() {
+  const diaSemana = prompt("Qual o dia do seu evento?").toLowerCase();
+  const hora = parseInt(prompt("Qual a hora do seu evento?"));
+
+  const diasDisponiveis = ["segunda", "terca", "quarta", "quinta", "sexta"];
+  if (diasDisponiveis.includes(diaSemana)) {
+    if (hora >= 7 && hora <= 23) {
+      alert("Auditório disponível");
+      const nomeEmpresa = prompt("Qual o nome da empresa?");
+      alert(
+        `Auditório reservado para ${nomeEmpresa}: ${diaSemana} às ${hora}hs`
+      );
+    } else {
+      alert("Auditório indisponível");
+    }
+  } else if (diaSemana === "sabado" || diaSemana === "domingo") {
+    if (hora >= 7 && hora <= 15) {
+      alert("Auditório disponível");
+      const nomeEmpresa = prompt("Qual o nome da empresa?");
+      alert(
+        `Auditório reservado para ${nomeEmpresa}: ${diaSemana} às ${hora}hs`
+      );
+    } else {
+      alert("Auditório indisponível");
+    }
   } else {
-    const nomeEmpresa = prompt("Qual o nome da empresa?");
-    alert(
-      "Auditório reservado para " +
-        nomeEmpresa +
-        ": " +
-        dia +
-        " às " +
-        hora +
-        " hs"
-    );
+    alert("Dia da semana inválido");
   }
 }
 
-function calcularGarcons(numeroHospedes, horarioEvento) {
-  const numeroGarcons =
-    Math.ceil(numeroHospedes / 12) + Math.ceil(horarioEvento / 2);
-  const custo = numeroGarcons * horarioEvento * 10.5;
-  alert(
-    "Serão necessários " +
-      numeroGarcons +
-      " garçons. \nCusto: R$" +
-      custo.toFixed(2)
+function calcularGarçons() {
+  const duracaoEvento = parseInt(prompt("Qual a duração do evento em horas?"));
+
+  const numConvidados = parseInt(
+    prompt("Qual o número de convidados para o seu evento?")
   );
+  const numGarçons =
+    Math.ceil(numConvidados / 12) + Math.ceil(duracaoEvento / 2);
+  const custoTotal = numGarçons * 10.5 * duracaoEvento;
+
+  alert(`São necessários ${numGarçons} garçons.`);
+  alert(`Custo: R$ ${custoTotal.toFixed(2)}`);
+  alert("Agora vamos calcular o custo do buffet do hotel para o evento.");
 }
 
-function calcularComida(numeroGarcons) {
-  const cafe = numeroGarcons * 0.2;
-  const agua = numeroGarcons * 0.5;
-  const salgados = numeroGarcons * 7;
-  const custoCafe = cafe * 0.8;
-  const custoAgua = agua * 0.4;
-  const custoSalgados = (salgados / 100) * 34;
-  alert(
-    "O evento precisára de " +
-      cafe +
-      "litros de café, " +
-      agua +
-      " litros de água e " +
-      salgados +
-      "salgados.\nCusto do café: R$ " +
-      custoCafe.toFixed(2) +
-      "\nCusto da àgua: R$ " +
-      custoAgua.toFixed(2) +
-      "\nCusto dos salgados: R$ " +
-      custoSalgados.toFixed(2)
+function calcularBuffet() {
+  const numConvidados = parseInt(
+    prompt("Qual o número de convidados para o seu evento?")
   );
+
+  const litrosCafe = numConvidados * 0.2;
+  const litrosAgua = numConvidados * 0.5;
+  const numSalgados = numConvidados * 7;
+
+  const custoCafe = litrosCafe * 0.8;
+  const custoAgua = litrosAgua * 0.4;
+  const custoSalgados = (numSalgados / 100) * 34;
+  const custoTotal = custoCafe + custoAgua + custoSalgados;
+
+  alert(`O evento precisará de ${litrosCafe} litros de café,
+   ${litrosAgua} litros de água, ${numSalgados} salgados.`);
+  alert(`Custo do garçons: R$ ${custoTotal.toFixed(2)}`);
 }
 
 function opcao() {
   verificarAuditorio();
+}
+
+function compararPreçosCombustivel() {
+  const precoAlcoolWayneOil = parseFloat(
+    prompt("Qual o valor do álccol no posto Wayne Oil?")
+  );
+  const precoGasolinaWayneOil = parseFloat(
+    prompt("Qual o valor da gasolina no posto Wayne Oil?")
+  );
+  const precoAlcoolStarkPetrol = parseFloat(
+    prompt("Qual o valot do álcool no posto Stark Petrol?")
+  );
+  const precoGasolinaStarkPetrol = parseFloat(
+    prompt("Qual o preço da gasolina no posto StarkPetrol?")
+  );
+
+  const tanqueCarro = 42;
+
+  const custoAlcoolWayneOil = tanqueCarro * precoAlcoolWayneOil;
+  const custoGasolinaWayneOil = tanqueCarro * precoGasolinaWayneOil;
+  const custoAlcoolStarkPetrol = tanqueCarro * precoAlcoolStarkPetrol;
+  const custoGasolinaStarkPetrol = tanqueCarro * precoGasolinaStarkPetrol;
+
+  const maisBaratoWayneOil =
+    custoAlcoolWayneOil < custoGasolinaWayneOil ? "álcool" : "gasolina";
+  const maisBaratoStarkPetrol =
+    custoAlcoolStarkPetrol < custoGasolinaStarkPetrol ? "álcool" : "gasolina";
+
+  alert(
+    "Custos:\n" +
+      "Wayne Oil Álcool: " +
+      custoAlcoolWayneOil +
+      "\n" +
+      "Wayne Oil - Gasolina: " +
+      custoGasolinaWayneOil +
+      "\n" +
+      "Stark Petrol - Álcool: " +
+      custoAlcoolStarkPetrol +
+      "\n" +
+      "StarkPetrol - Gsolina: " +
+      custoGasolinaStarkPetrol +
+      "\n" +
+      "\n" +
+      "Mais barato em Wayne Oil: " +
+      maisBaratoWayneOil +
+      "\n" +
+      "Mais barato em Stark Petrol: " +
+      maisBaratoStarkPetrol
+  );
+
+  let postoMaisBarato;
+  if (
+    custoAlcoolWayneOil < custoAlcoolStarkPetrol &&
+    custoGasolinaWayneOil < custoGasolinaStarkPetrol
+  ) {
+    postoMaisBarato = "Wayne Oil";
+  } else if (
+    custoAlcoolStarkPetrol < custoAlcoolWayneOil &&
+    custoGasolinaStarkPetrol < custoGasolinaWayneOil
+  ) {
+    postoMaisBarato = "Stark Petrol";
+  } else {
+    postoMaisBarato = "ambos têm preços iguais";
+  }
+
+  let opcaoMaisBarata;
+  if (precoAlcoolWayneOil <= 0.7 * precoGasolinaWayneOil) {
+    opcaoMaisBarata = "álcool";
+  } else {
+    opcaoMaisBarata = "gasolina";
+  }
+
+  alert(
+    `É mais barato abastecer com ${opcaoMaisBarata} no posto ${postoMaisBarato}.`
+  );
+}
+
+function opcao() {
+  compararPreçosCombustivel();
+}
+
+function calcularValorServico() {
+  const nomeEmpresa = prompt("Qual o nome da empresa?");
+  const ValorPorAparelho = parseFloat(prompt("Qual o valor do aparelho?"));
+  const quantidadeAparelhos = parseInt(
+    prompt("Qual a quantidade de aparelhos?")
+  );
+  const percentualDesconto = parseFloat(
+    prompt("Qual a porcentagem de desconto?")
+  );
+  const quantidadeMinimaDesconto = parseInt(
+    prompt("Qual o número mínimo de aparelho?")
+  );
+
+  let valorTotal = ValorPorAparelho * quantidadeAparelhos;
+  let valorDesconto = 0;
+
+  if (quantidadeAparelhos >= quantidadeMinimaDesconto) {
+    valorDesconto = (valorTotal * percentualDesconto) / 100;
+  }
+
+  valorTotal -= valorDesconto;
+
+  alert(`O serviço de ${nomeEmpresa} custára R$ ${valorTotal.toFixed(2)}`);
+  return valorTotal;
+}
+
+function main() {
+  let menorValor = Infinity;
+  let empresaMenorValor = "";
+
+  do {
+    const valorServico = calcularValorServico();
+    if (valorServico < menorValor) {
+      menorValor = valorServico;
+      empresaMenorValor = prompt("Qual o nome da empresa?");
+    }
+
+    var continuar = prompt("Deseja informar novos dados? (S/n)").toUpperCase();
+  } while (continuar === "S");
+
+  alert(
+    `O orçamento de menor valor é o de ${empresaMenorValor} por R$ ${menorValor.toFixed(
+      2
+    )}`
+  );
+}
+
+function despedida() {
+  alert("Muito obrigado e até logo");
 }
 
 const btnInicio = document.getElementById("btn-inicio");
